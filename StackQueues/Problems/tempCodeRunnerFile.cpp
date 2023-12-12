@@ -1,0 +1,1 @@
+  rightSmall[i] = s.top();

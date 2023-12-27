@@ -1,45 +1,42 @@
 #include <bits/stdc++.h>
 using namespace std;
-
-// {circular array i <-> i%n}
-
-void nextGreatest(vector<int> nums1)
+//  USING DFS
+bool detectCycle(int node, int parent, vector<vector<int>> adj, int visit[])
 {
-    int n = nums1.size();
-    if (nums1.size() == 0)
-        return;
-
-    stack<int> s;
-
-    vector<int> ans(n);
-    ans[n - 1] = -1;
-    s.push(nums1[n - 1]);
-
-    for (int i = n - 2; i >= 0; i--)
+    visit[node] = 1;
+    for (auto it : adj[node])
     {
-        while (!s.empty() && nums1[i % n] <= s.top())
+        if (visit[it] == 0)
         {
-            s.pop();
+            if (detectCycle(it, node, adj, visit))
+                return true;
         }
-        if (s.empty())
-        {
-            ans[i % n] = -1;
-        }
-        else
-        {
-            ans[i % n] = s.top();
-        }
-        s.push(nums1[i % n]);
+        // now only visited options left either its a parent or a new node which was previously touched
+        else if (it != parent)
+            return true;
     }
-    for (auto it : ans)
+    return false;
+}
+bool isCycle(vector<vector<int>> adj, int V)
+{
+    int visit[V] = {0};
+    for (int i = 0; i < V; i++)
     {
-        cout << " " << it;
+        if (detectCycle(i, -1, adj, visit) == true)
+        {
+            return true;
+        }
     }
-    cout << endl;
+    return false;
+}
+bool canFinish(int numCourses, vector<vector<int>> &prerequisites)
+{
+    return isCycle(prerequisites, numCourses);
 }
 int main()
 {
-    vector<int> nums1 = {4, 15, 5, 3, 1, 2, 5, 3, 1, 2, 4, 6};
-    nextGreatest(nums1);
-    return 0;
+    vector<vector<int>> adj = {{1, 0}, {0, 1}};
+    int n = sizeof(adj) / sizeof(adj[0]);
+    cout
+        << canFinish(2, adj) << endl;
 }
